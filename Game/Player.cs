@@ -1,10 +1,11 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace GameProject {
     static class Player {
-        public const float MoveSpeed = 30;
+        public const float MoveSpeed = 20;
         public static Vector2 Position;
         public static Rectangle Hitbox { get; private set; }
 
@@ -20,8 +21,10 @@ namespace GameProject {
                 move.X = -MoveSpeed;
             if (Input.AnyKeyHeld(Keys.D, Keys.Right))
                 move.X += MoveSpeed;
+            move.Normalize();
+            move *= MoveSpeed;
 
-            if (move.X != 0) {
+            if (!float.IsNaN(move.X)) {
                 float addX = move.X * Time.Delta,
                     newX = Position.X + addX;
                 for (int i = 0; i < GameScr.SolidHitboxes.Length; i++) {
@@ -34,7 +37,7 @@ namespace GameProject {
                 Position.X = newX;
             }
 
-            if (move.Y != 0) {
+            if (!float.IsNaN(move.Y)) {
                 float addY = move.Y * Time.Delta,
                     newY = Position.Y + addY;
                 for (int i = 0; i < GameScr.SolidHitboxes.Length; i++) {
@@ -49,7 +52,7 @@ namespace GameProject {
         }
 
         public static void Draw(SpriteBatch s) {
-            s.FillRectangle(Hitbox, Color.White * .5f, 0,
+            s.FillRectangle(Hitbox, Color.Blue * .75f, 0,
                 origin : new Vector2(Hitbox.Width * .5f, Hitbox.Height * .5f));
         }
     }

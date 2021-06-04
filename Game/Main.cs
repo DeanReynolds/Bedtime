@@ -24,7 +24,12 @@ namespace GameProject {
         }
 
         public Main() {
-            Graphics = new GraphicsDeviceManager(this);
+            Graphics = new GraphicsDeviceManager(this) {
+                PreferredBackBufferWidth = 1920,
+                PreferredBackBufferHeight = 1080,
+                HardwareModeSwitch = false,
+                IsFullScreen = true
+            };
             IsMouseVisible = true;
             Content = base.Content;
             Content.RootDirectory = "Content";
