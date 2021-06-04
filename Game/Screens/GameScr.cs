@@ -38,6 +38,7 @@ namespace GameProject {
             s.End();
             Main.GraphicsDevice.SetRenderTarget(UITarget);
             s.Begin();
+            Main.GraphicsDevice.Clear(Color.Transparent);
             if (_light == 0) {
                 Rectangle sanityBar = new Rectangle(380, 525, 200, 10);
                 s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 500), null, Color.White,
