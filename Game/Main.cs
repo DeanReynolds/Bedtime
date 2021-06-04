@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Apos.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,12 +20,6 @@ namespace GameProject {
             Screen = _scr[typeof(T)];
             Screen.LoadContent();
         }
-
-        readonly ICondition _quit =
-            new AnyCondition(
-                new KeyboardCondition(Keys.Escape),
-                new GamePadCondition(GamePadButton.Back, 0)
-            );
 
         public Main() {
             Graphics = new GraphicsDeviceManager(this);
@@ -47,31 +40,32 @@ namespace GameProject {
         protected override void LoadContent() {
             S = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
-            InputHelper.Setup(this);
-
             Screen = _scr[typeof(GameScr)];
             Screen.LoadContent();
         }
 
         protected override void Update(GameTime gameTime) {
-            InputHelper.UpdateSetup();
+            Input.Update();
 
-            if (_quit.Pressed())
+            if (Input.AnyKeyPressed(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            Screen.Update();
 
-            InputHelper.UpdateCleanup();
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            Screen.Draw(S);
 
             base.Draw(gameTime);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args) {
+            Screen.ExitScreen();
+            base.OnExiting(sender, args);
         }
     }
 }
