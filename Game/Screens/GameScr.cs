@@ -21,9 +21,11 @@ namespace GameProject {
         public override void Draw(SpriteBatch s) {
             Main.GraphicsDevice.SetRenderTarget(_mirror);
             s.Begin();
+            const float mirrorToWorldRatio = 160f / 39f;
             s.Draw(Main.Content.Load<Texture2D>("background"), new Vector2(0, 0), null, Color.White,
                 0, Vector2.Zero, 1, 0, 0);
-            s.FillRectangle(new Vector2(Player.Position.X, 90 - Player.Position.Y + 34), new Vector2(Player.Hitbox.Width, Player.Hitbox.Height), Color.Blue * .75f, 0,
+            s.FillRectangle(new Vector2(((Player.Position.X - 29) * mirrorToWorldRatio) - ((Player.Hitbox.Width / 2) * mirrorToWorldRatio),
+                    45 - Player.Position.Y + 34), new Vector2(Player.Hitbox.Width, Player.Hitbox.Height) * mirrorToWorldRatio, Color.Blue * .75f, 0,
                 origin : new Vector2(Player.Hitbox.Width * .5f, Player.Hitbox.Height * .5f));
             s.End();
             Main.GraphicsDevice.SetRenderTarget(ScreenTarget);
