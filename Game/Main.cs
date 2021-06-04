@@ -28,7 +28,7 @@ namespace GameProject {
                 PreferredBackBufferWidth = 1920,
                 PreferredBackBufferHeight = 1080,
                 HardwareModeSwitch = false,
-                IsFullScreen = true
+                // IsFullScreen = true
             };
             IsMouseVisible = true;
             Content = base.Content;

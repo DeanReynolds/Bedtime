@@ -31,6 +31,12 @@
 /processorParam:Quality=Best
 /build:Bedtime_Game_Music1.ogg
 
+#begin Bedtime_Game_Music2.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Bedtime_Game_Music2.ogg
+
 #begin mirror.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -42,6 +48,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:mirror.png
+
+#begin sanityText.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sanityText.png
 
 #begin sink.png
 /importer:TextureImporter
