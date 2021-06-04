@@ -6,6 +6,7 @@ namespace GameProject {
     class GameScr : Screen {
         static RenderTarget2D _mirror;
         public static RenderTarget2D ScreenTarget { get; private set; }
+        public static Rectangle[] SolidHitboxes { get; private set; }
 
         public override void Draw(SpriteBatch s) {
             Main.GraphicsDevice.SetRenderTarget(ScreenTarget);
@@ -23,8 +24,13 @@ namespace GameProject {
 
         public override void LoadContent() {
             ScreenTarget = new RenderTarget2D(Main.GraphicsDevice, 160, 90);
+            _mirror = new RenderTarget2D(Main.GraphicsDevice, 160, 90);
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(Main.Content.Load<Song>("Bedtime_Game_Music1"));
+            SolidHitboxes = new [] {
+                new Rectangle(0, 0, 160, 34)
+            };
+            Player.Position = new Vector2(80, 79);
         }
 
         public override void Update() {

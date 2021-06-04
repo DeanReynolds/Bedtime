@@ -52,6 +52,7 @@ namespace GameProject {
 
         protected override void Update(GameTime gameTime) {
             Input.Update();
+            Time.Update(gameTime);
 
             if (Input.AnyKeyPressed(Keys.Escape))
                 Exit();
