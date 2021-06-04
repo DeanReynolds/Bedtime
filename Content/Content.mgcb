@@ -13,9 +13,9 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Bedtime Game Music1.ogg
+#begin Bedtime_Game_Music1.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:Bedtime Game Music1.ogg
+/build:Bedtime_Game_Music1.ogg
 
