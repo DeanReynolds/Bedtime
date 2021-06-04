@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameProject {
     static class Player {
-        public const float MoveSpeed = 10;
+        public const float MoveSpeed = 30;
         public static Vector2 Position;
         public static Rectangle Hitbox { get; private set; }
 
