@@ -40,9 +40,12 @@ namespace GameProject {
             s.Begin();
             Main.GraphicsDevice.Clear(Color.Transparent);
             if (_light == 0) {
-                Rectangle sanityBar = new Rectangle(380, 525, 200, 10);
-                s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 500), null, Color.White,
-                    0, new Vector2(137.5f, 28.5f), 1, 0, 0);
+                Rectangle sanityBar = new Rectangle(330, 500, 300, 20);
+                s.FillRectangle(sanityBar, Color.DarkGray);
+                s.FillRectangle(new Rectangle(sanityBar.X, sanityBar.Y, (int)(sanityBar.Width * _sanity), sanityBar.Height), Color.Lerp(Color.DarkRed, Color.LimeGreen, _sanity));
+                s.DrawRectangle(sanityBar, Color.Black, RectStyle.Outline, thickness : 5);
+                s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 480), null, Color.White,
+                    0, new Vector2(137.5f, 28.5f), MathF.Max(.4f, .3f + (MathF.Cos(Time.Total * 3) * .5f)), 0, 0);
             }
             s.End();
             Main.GraphicsDevice.SetRenderTarget(null);
@@ -82,6 +85,19 @@ namespace GameProject {
                     _brushingTeeth = false;
                 else if (Player.Position.Y <= 42 && Player.Position.X > 34 && Player.Position.X < 76)
                     _brushingTeeth = true;
+            }
+            if (_light == 0) {
+                if (_sanity > 0) {
+                    _sanity -= Time.Delta * .01f;
+                    if (_sanity < 0)
+                        _sanity = 0;
+                }
+            } else {
+                if (_sanity < 1) {
+                    _sanity += Time.Delta * .01f;
+                    if (_sanity > 1)
+                        _sanity = 1;
+                }
             }
             if (_light != _lightTarget)
                 _light += MathF.Sign(_lightTarget - _light) * _lightFadeSpeed * Time.Delta;
