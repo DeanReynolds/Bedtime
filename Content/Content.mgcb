@@ -37,6 +37,12 @@
 /processorParam:Quality=Best
 /build:Bedtime_Game_Music2.ogg
 
+#begin flipswitch.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:flipswitch.wav
+
 #begin mirror.png
 /importer:TextureImporter
 /processor:TextureProcessor

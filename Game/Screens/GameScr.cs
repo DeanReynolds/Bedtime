@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -13,7 +14,7 @@ namespace GameProject {
 
         static float _sanity, _teethBrushed, _light, _lightOffTimer,
         _lightTarget, _lightFadeSpeed;
-        static bool _brushingTeeth;
+        static bool _brushingTeeth, _isLightOff;
         static int _lightFlickers;
         static readonly Rng Rng = new Rng();
 
@@ -30,6 +31,10 @@ namespace GameProject {
             s.Draw(Main.Content.Load<Texture2D>("background"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("sink"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("mirror"), Vector2.Zero, Color.White);
+            if (_light == 0)
+                s.Draw(Main.Content.Load<Texture2D>("switchoff"), Vector2.Zero, Color.White);
+            else
+                s.Draw(Main.Content.Load<Texture2D>("switchon"), Vector2.Zero, Color.White);
             s.Draw(_mirror, new Rectangle(31, 8, 39, 15), Color.White);
             s.FillRectangle(new Vector2(Player.Position.X, Player.Position.Y), new Vector2(Player.Hitbox.Width, Player.Hitbox.Height), Color.Blue * .75f, 0,
                 origin : new Vector2(Player.Hitbox.Width * .5f, Player.Hitbox.Height * .5f));
@@ -39,14 +44,12 @@ namespace GameProject {
             Main.GraphicsDevice.SetRenderTarget(UITarget);
             s.Begin();
             Main.GraphicsDevice.Clear(Color.Transparent);
-            if (_light == 0) {
-                Rectangle sanityBar = new Rectangle(330, 500, 300, 20);
-                s.FillRectangle(sanityBar, Color.DarkGray);
-                s.FillRectangle(new Rectangle(sanityBar.X, sanityBar.Y, (int)(sanityBar.Width * _sanity), sanityBar.Height), Color.Lerp(Color.DarkRed, Color.LimeGreen, _sanity));
-                s.DrawRectangle(sanityBar, Color.Black, RectStyle.Outline, thickness : 5);
-                s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 480), null, Color.White,
-                    0, new Vector2(137.5f, 28.5f), MathF.Max(.4f, .3f + (MathF.Cos(Time.Total * 3) * .5f)), 0, 0);
-            }
+            Rectangle sanityBar = new Rectangle(340, 510, 280, 20);
+            s.FillRectangle(sanityBar, Color.DarkGray);
+            s.FillRectangle(new Rectangle(sanityBar.X, sanityBar.Y, (int)(sanityBar.Width * _sanity), sanityBar.Height), Color.Lerp(Color.DarkRed, Color.LimeGreen, _sanity));
+            s.DrawRectangle(sanityBar, Color.Black, RectStyle.Outline, thickness : 4);
+            s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 480), null, Color.White,
+                0, new Vector2(137.5f, 28.5f), MathF.Max(.4f, .3f + (MathF.Cos(Time.Total * 3) * .5f)), 0, 0);
             s.End();
             Main.GraphicsDevice.SetRenderTarget(null);
             s.Begin(samplerState: SamplerState.PointClamp);
@@ -73,6 +76,7 @@ namespace GameProject {
             _lightTarget = _light = 1;
             _lightOffTimer = 0;
             _lightFlickers = 0;
+            Main.Content.Load<SoundEffect>("flipswitch");
         }
 
         public override void Update() {
@@ -85,28 +89,41 @@ namespace GameProject {
                     _brushingTeeth = false;
                 else if (Player.Position.Y <= 42 && Player.Position.X > 34 && Player.Position.X < 76)
                     _brushingTeeth = true;
+                if (((_light == 0 && _isLightOff) || _light == 1) && Player.Position.Y <= 42 && Player.Position.X > 90 && Player.Position.X < 104) {
+                    _lightTarget = _light = 1 - _light;
+                    if (_light == 0) {
+                        _isLightOff = true;
+                        MediaPlayer.Play(Main.Content.Load<Song>("Bedtime_Game_Music2"));
+                    } else {
+                        _isLightOff = false;
+                        MediaPlayer.Play(Main.Content.Load<Song>("Bedtime_Game_Music1"));
+                    }
+                    Main.Content.Load<SoundEffect>("flipswitch").Play();
+                }
             }
             if (_light == 0) {
                 if (_sanity > 0) {
-                    _sanity -= Time.Delta * .01f;
+                    _sanity -= Time.Delta * .1f;
                     if (_sanity < 0)
                         _sanity = 0;
                 }
             } else {
                 if (_sanity < 1) {
-                    _sanity += Time.Delta * .01f;
+                    _sanity += Time.Delta * .1f;
                     if (_sanity > 1)
                         _sanity = 1;
                 }
             }
             if (_light != _lightTarget)
                 _light += MathF.Sign(_lightTarget - _light) * _lightFadeSpeed * Time.Delta;
-            if (MathF.Abs(_light - _lightTarget) <= .01f && _light != 0) {
+            if (MathF.Abs(_light - _lightTarget) <= .01f && !_isLightOff) {
                 _light = _lightTarget;
                 if (_lightFlickers > 0) {
                     if (Rng.NextFloat() <= .1f) {
                         _lightTarget = _light = 0;
+                        _isLightOff = true;
                         MediaPlayer.Play(Main.Content.Load<Song>("Bedtime_Game_Music2"));
+                        Main.Content.Load<SoundEffect>("flipswitch").Play();
                     } else if (_lightTarget != 1) {
                         _lightTarget = 1;
                         _lightFadeSpeed = Rng.NextFloat(.4f, 1.2f);
@@ -119,13 +136,13 @@ namespace GameProject {
                     }
                 } else if (_light == 1) {
                     _lightOffTimer += Time.Delta;
-                    if (_lightOffTimer >= 1) {
+                    if (_lightOffTimer >= 3) {
                         if (Rng.NextFloat() <= .2f) {
                             _lightFlickers += Rng.Next(1, 5);
                             _lightTarget = Rng.NextFloat(.3f, .9f);
                             _lightFadeSpeed = Rng.NextFloat(.4f, 1.2f);
                         }
-                        _lightOffTimer -= 1;
+                        _lightOffTimer -= 3;
                     }
                 }
             }
