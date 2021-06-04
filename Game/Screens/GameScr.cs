@@ -37,11 +37,13 @@ namespace GameProject {
                 s.FillRectangle(new Rectangle(0, 0, ScreenTarget.Width, ScreenTarget.Height), Color.Black * .666f * (1 - _light));
             s.End();
             Main.GraphicsDevice.SetRenderTarget(UITarget);
+            s.Begin();
             if (_light == 0) {
                 Rectangle sanityBar = new Rectangle(380, 525, 200, 10);
                 s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 500), null, Color.White,
                     0, new Vector2(137.5f, 28.5f), 1, 0, 0);
             }
+            s.End();
             Main.GraphicsDevice.SetRenderTarget(null);
             s.Begin(samplerState: SamplerState.PointClamp);
             s.Draw(ScreenTarget, new Rectangle(0, 0, Main.Window.ClientBounds.Width, Main.Window.ClientBounds.Height), Color.White);
