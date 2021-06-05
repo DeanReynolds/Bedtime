@@ -13,7 +13,7 @@ namespace GameProject {
         public static Rectangle[] SolidHitboxes { get; private set; }
 
         static float _sanity, _teethBrushed, _light, _lightOffTimer,
-        _lightTarget, _lightFadeSpeed;
+        _lightTarget, _lightFadeSpeed, _sanityVisibility;
         static bool _brushingTeeth, _isLightOff;
         static int _lightFlickers;
         static readonly Rng Rng = new Rng();
@@ -33,6 +33,7 @@ namespace GameProject {
             s.Draw(Main.Content.Load<Texture2D>("background"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("sink"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("mirror"), Vector2.Zero, Color.White);
+            s.Draw(Main.Content.Load<Texture2D>("toilet"), Vector2.Zero, Color.White);
             if (_light == 0)
                 s.Draw(Main.Content.Load<Texture2D>("switchoff"), Vector2.Zero, Color.White);
             else
@@ -46,12 +47,21 @@ namespace GameProject {
             Main.GraphicsDevice.SetRenderTarget(UITarget);
             s.Begin();
             Main.GraphicsDevice.Clear(Color.Transparent);
-            Rectangle sanityBar = new Rectangle(340, 510, 280, 20);
-            s.FillRectangle(sanityBar, Color.DarkGray);
-            s.FillRectangle(new Rectangle(sanityBar.X, sanityBar.Y, (int)(sanityBar.Width * _sanity), sanityBar.Height), Color.Lerp(Color.DarkRed, Color.LimeGreen, _sanity));
-            s.DrawRectangle(sanityBar, Color.Black, RectStyle.Outline, thickness : 4);
-            s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 480), null, Color.White,
-                0, new Vector2(137.5f, 28.5f), MathF.Max(.4f, .3f + (MathF.Cos(Time.Total * 3) * .5f)), 0, 0);
+            if (_sanityVisibility > 0) {
+                Rectangle sanityBar = new Rectangle(340, 510, 280, 20);
+                var sanityUIOpacity = MathF.Min(_sanityVisibility * 3, 1);
+                s.FillRectangle(sanityBar, Color.DarkGray * sanityUIOpacity);
+                s.FillRectangle(new Rectangle(sanityBar.X, sanityBar.Y, (int)(sanityBar.Width * _sanity), sanityBar.Height), Color.Lerp(Color.DarkRed, Color.LimeGreen * sanityUIOpacity, _sanity));
+                s.DrawRectangle(sanityBar, Color.Black * sanityUIOpacity, RectStyle.Outline, thickness : 4);
+                s.Draw(Main.Content.Load<Texture2D>("sanityText"), new Vector2(480, 490), null, Color.White * sanityUIOpacity,
+                    0, new Vector2(137.5f, 28.5f), MathF.Max(.4f, .3f + (MathF.Cos(Time.Total * 3) * .25f)), 0, 0);
+            }
+            Rectangle teethBrushedBar = new Rectangle(340, 50, 280, 20);
+            s.FillRectangle(teethBrushedBar, Color.DarkGray);
+            s.FillRectangle(new Rectangle(teethBrushedBar.X, teethBrushedBar.Y, (int)(teethBrushedBar.Width * _teethBrushed), teethBrushedBar.Height), Color.Lerp(Color.Yellow, Color.White, _teethBrushed));
+            s.DrawRectangle(teethBrushedBar, Color.Black, RectStyle.Outline, thickness : 4);
+            s.Draw(Main.Content.Load<Texture2D>("teethBrushedText"), new Vector2(480, 30), null, Color.White,
+                0, new Vector2(294.5f, 27), .3f, 0, 0);
             s.End();
             Main.GraphicsDevice.SetRenderTarget(null);
             s.Begin(samplerState: SamplerState.PointClamp);
@@ -77,15 +87,18 @@ namespace GameProject {
             _brushingTeeth = false;
             _lightTarget = _light = 1;
             _lightOffTimer = 0;
-            _lightFlickers = 0;
+            _sanityVisibility = _lightFlickers = 0;
             Main.Content.Load<SoundEffect>("flipswitch");
         }
 
         public override void Update() {
             if (!_brushingTeeth)
                 Player.Update();
-            else
-                _teethBrushed += Time.Delta / 30;
+            else {
+                _teethBrushed += Time.Delta * .01f;
+                if (_teethBrushed > 1)
+                    _teethBrushed = 1;
+            }
             if (Input.AnyKeyPressed(Keys.E)) {
                 if (_brushingTeeth)
                     _brushingTeeth = false;
@@ -116,6 +129,11 @@ namespace GameProject {
                         _sanity = 1;
                 }
             }
+            if (_sanity < 1) {
+                if ((_sanityVisibility += Time.Delta * .1f) > 1)
+                    _sanityVisibility = 1;
+            } else if ((_sanityVisibility -= Time.Delta * .5f) < 0)
+                _sanityVisibility = 0;
             if (_light != _lightTarget)
                 _light += MathF.Sign(_lightTarget - _light) * _lightFadeSpeed * Time.Delta;
             if (MathF.Abs(_light - _lightTarget) <= .01f && !_isLightOff) {
