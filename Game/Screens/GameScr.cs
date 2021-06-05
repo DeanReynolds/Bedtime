@@ -31,6 +31,7 @@ namespace GameProject {
             Main.GraphicsDevice.SetRenderTarget(ScreenTarget);
             s.Begin();
             s.Draw(Main.Content.Load<Texture2D>("background"), Vector2.Zero, Color.White);
+            s.Draw(Main.Content.Load<Texture2D>("door"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("sink"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("mirror"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("toilet"), Vector2.Zero, Color.White);
