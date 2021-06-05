@@ -25,7 +25,7 @@ namespace GameProject {
             s.Draw(Main.Content.Load<Texture2D>("background"), new Vector2(0, 0), null, Color.White,
                 0, Vector2.Zero, 1, 0, 0);
             s.FillRectangle(new Vector2(((Player.Position.X - 29) * mirrorToWorldRatio) - ((Player.Hitbox.Width / 2) * mirrorToWorldRatio),
-                    45 - Player.Position.Y + 34), new Vector2(Player.Hitbox.Width, Player.Hitbox.Height) * mirrorToWorldRatio, Color.Blue * .75f, 0,
+                    45 - (Player.Position.Y * mirrorToWorldRatio) + 34 * mirrorToWorldRatio), new Vector2(Player.Hitbox.Width, Player.Hitbox.Height) * mirrorToWorldRatio, Color.Blue * .75f, 0,
                 origin : new Vector2(Player.Hitbox.Width * .5f, Player.Hitbox.Height * .5f));
             s.End();
             Main.GraphicsDevice.SetRenderTarget(ScreenTarget);
@@ -33,7 +33,6 @@ namespace GameProject {
             s.Draw(Main.Content.Load<Texture2D>("background"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("door"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("sink"), Vector2.Zero, Color.White);
-            s.Draw(Main.Content.Load<Texture2D>("mirror"), Vector2.Zero, Color.White);
             s.Draw(Main.Content.Load<Texture2D>("toilet"), Vector2.Zero, Color.White);
             if (_light == 0)
                 s.Draw(Main.Content.Load<Texture2D>("switchoff"), Vector2.Zero, Color.White);
@@ -44,6 +43,9 @@ namespace GameProject {
                 origin : new Vector2(Player.Hitbox.Width * .5f, Player.Hitbox.Height * .5f));
             if (_light < 1)
                 s.FillRectangle(new Rectangle(0, 0, ScreenTarget.Width, ScreenTarget.Height), Color.Black * .666f * (1 - _light));
+            s.End();
+            s.Begin(SpriteSortMode.Immediate, BlendState.Additive);
+            s.Draw(Main.Content.Load<Texture2D>("mirror"), Vector2.Zero, Color.White);
             s.End();
             Main.GraphicsDevice.SetRenderTarget(UITarget);
             s.Begin();
